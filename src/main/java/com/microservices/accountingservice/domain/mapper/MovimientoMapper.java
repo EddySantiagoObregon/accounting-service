@@ -2,42 +2,64 @@ package com.microservices.accountingservice.domain.mapper;
 
 import com.microservices.accountingservice.domain.dto.MovimientoDto;
 import com.microservices.accountingservice.domain.entity.Movimiento;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring")
-public interface MovimientoMapper {
+@Component
+public class MovimientoMapper {
 
-    MovimientoMapper INSTANCE = Mappers.getMapper(MovimientoMapper.class);
+    public Movimiento toEntity(MovimientoDto movimientoDto) {
+        if (movimientoDto == null) {
+            return null;
+        }
+        
+        Movimiento movimiento = new Movimiento();
+        movimiento.setId(movimientoDto.getId());
+        movimiento.setFecha(movimientoDto.getFecha());
+        movimiento.setTipoMovimiento(movimientoDto.getTipoMovimiento());
+        movimiento.setValor(movimientoDto.getValor());
+        movimiento.setSaldo(movimientoDto.getSaldo());
+        movimiento.setClienteId(movimientoDto.getClienteId());
+        return movimiento;
+    }
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "fechaCreacion", ignore = true)
-    @Mapping(target = "fechaActualizacion", ignore = true)
-    @Mapping(target = "cuenta", ignore = true)
-    @Mapping(target = "numeroCuenta", ignore = true)
-    @Mapping(target = "tipoCuenta", ignore = true)
-    @Mapping(target = "clienteId", ignore = true)
-    @Mapping(target = "nombreCliente", ignore = true)
-    Movimiento toEntity(MovimientoDto movimientoDto);
+    public MovimientoDto toDto(Movimiento movimiento) {
+        if (movimiento == null) {
+            return null;
+        }
+        
+        MovimientoDto dto = new MovimientoDto();
+        dto.setId(movimiento.getId());
+        dto.setFecha(movimiento.getFecha());
+        dto.setTipoMovimiento(movimiento.getTipoMovimiento());
+        dto.setValor(movimiento.getValor());
+        dto.setSaldo(movimiento.getSaldo());
+        dto.setCuentaId(movimiento.getCuenta() != null ? movimiento.getCuenta().getId() : null);
+        dto.setClienteId(movimiento.getClienteId());
+        dto.setNumeroCuenta(movimiento.getCuenta() != null ? movimiento.getCuenta().getNumeroCuenta() : null);
+        dto.setTipoCuenta(movimiento.getCuenta() != null ? movimiento.getCuenta().getTipoCuenta() : null);
+        dto.setFechaCreacion(movimiento.getFechaCreacion());
+        dto.setFechaActualizacion(movimiento.getFechaActualizacion());
+        return dto;
+    }
 
-    @Mapping(target = "numeroCuenta", source = "cuenta.numeroCuenta")
-    @Mapping(target = "tipoCuenta", source = "cuenta.tipoCuenta")
-    @Mapping(target = "clienteId", source = "cuenta.clienteId")
-    @Mapping(target = "nombreCliente", ignore = true)
-    MovimientoDto toDto(Movimiento movimiento);
+    public List<MovimientoDto> toDtoList(List<Movimiento> movimientos) {
+        if (movimientos == null) {
+            return null;
+        }
+        return movimientos.stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
 
-    List<MovimientoDto> toDtoList(List<Movimiento> movimientos);
-
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "fechaCreacion", ignore = true)
-    @Mapping(target = "fechaActualizacion", ignore = true)
-    @Mapping(target = "cuenta", ignore = true)
-    @Mapping(target = "valor", ignore = true)
-    @Mapping(target = "saldo", ignore = true)
-    @Mapping(target = "fecha", ignore = true)
-    Movimiento updateEntity(MovimientoDto movimientoDto, @org.mapstruct.MappingTarget Movimiento movimiento);
+    public void updateEntity(MovimientoDto movimientoDto, Movimiento movimiento) {
+        if (movimientoDto == null || movimiento == null) {
+            return;
+        }
+        
+        movimiento.setTipoMovimiento(movimientoDto.getTipoMovimiento());
+    }
 }
 

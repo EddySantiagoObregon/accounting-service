@@ -2,34 +2,68 @@ package com.microservices.accountingservice.domain.mapper;
 
 import com.microservices.accountingservice.domain.dto.CuentaDto;
 import com.microservices.accountingservice.domain.entity.Cuenta;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring")
-public interface CuentaMapper {
+@Component
+public class CuentaMapper {
 
-    CuentaMapper INSTANCE = Mappers.getMapper(CuentaMapper.class);
+    public Cuenta toEntity(CuentaDto cuentaDto) {
+        if (cuentaDto == null) {
+            return null;
+        }
+        
+        Cuenta cuenta = new Cuenta();
+        cuenta.setId(cuentaDto.getId());
+        cuenta.setNumeroCuenta(cuentaDto.getNumeroCuenta());
+        cuenta.setTipoCuenta(cuentaDto.getTipoCuenta());
+        cuenta.setSaldoInicial(cuentaDto.getSaldoInicial());
+        cuenta.setSaldoActual(cuentaDto.getSaldoActual());
+        cuenta.setClienteId(cuentaDto.getClienteId());
+        cuenta.setEstado(cuentaDto.getEstado());
+        return cuenta;
+    }
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "fechaCreacion", ignore = true)
-    @Mapping(target = "fechaActualizacion", ignore = true)
-    @Mapping(target = "movimientos", ignore = true)
-    @Mapping(target = "saldoActual", ignore = true)
-    Cuenta toEntity(CuentaDto cuentaDto);
+    public CuentaDto toDto(Cuenta cuenta) {
+        if (cuenta == null) {
+            return null;
+        }
+        
+        CuentaDto dto = new CuentaDto();
+        dto.setId(cuenta.getId());
+        dto.setNumeroCuenta(cuenta.getNumeroCuenta());
+        dto.setTipoCuenta(cuenta.getTipoCuenta());
+        dto.setSaldoInicial(cuenta.getSaldoInicial());
+        dto.setSaldoActual(cuenta.getSaldoActual());
+        dto.setClienteId(cuenta.getClienteId());
+        dto.setEstado(cuenta.getEstado());
+        dto.setFechaCreacion(cuenta.getFechaCreacion());
+        dto.setFechaActualizacion(cuenta.getFechaActualizacion());
+        return dto;
+    }
 
-    @Mapping(target = "saldoActual", expression = "java(cuenta.getSaldoActual())")
-    CuentaDto toDto(Cuenta cuenta);
+    public List<CuentaDto> toDtoList(List<Cuenta> cuentas) {
+        if (cuentas == null) {
+            return null;
+        }
+        return cuentas.stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
 
-    List<CuentaDto> toDtoList(List<Cuenta> cuentas);
-
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "fechaCreacion", ignore = true)
-    @Mapping(target = "fechaActualizacion", ignore = true)
-    @Mapping(target = "movimientos", ignore = true)
-    @Mapping(target = "saldoActual", ignore = true)
-    Cuenta updateEntity(CuentaDto cuentaDto, @org.mapstruct.MappingTarget Cuenta cuenta);
+    public void updateEntity(CuentaDto cuentaDto, Cuenta cuenta) {
+        if (cuentaDto == null || cuenta == null) {
+            return;
+        }
+        
+        cuenta.setNumeroCuenta(cuentaDto.getNumeroCuenta());
+        cuenta.setTipoCuenta(cuentaDto.getTipoCuenta());
+        cuenta.setSaldoInicial(cuentaDto.getSaldoInicial());
+        cuenta.setSaldoActual(cuentaDto.getSaldoActual());
+        cuenta.setClienteId(cuentaDto.getClienteId());
+        cuenta.setEstado(cuentaDto.getEstado());
+    }
 }
 

@@ -16,31 +16,6 @@ services:
     networks:
       - microservices-network
 
-  # Kafka
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.4.0
-    container_name: microservices-zookeeper
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-    networks:
-      - microservices-network
-
-  kafka:
-    image: confluentinc/cp-kafka:7.4.0
-    container_name: microservices-kafka
-    depends_on:
-      - zookeeper
-    ports:
-      - "9092:9092"
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
-    networks:
-      - microservices-network
 
   # Servicio de Clientes
   customer-service:
@@ -54,10 +29,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/customer_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: password
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
       - mysql
-      - kafka
     networks:
       - microservices-network
 
@@ -73,10 +46,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/accounting_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: password
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
       - mysql
-      - kafka
     networks:
       - microservices-network
 
